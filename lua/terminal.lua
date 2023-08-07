@@ -4,6 +4,7 @@ local function get_interpreter(debug)
     local extmap = {
         js = 'node',
         cjs = 'node',
+        mjs = 'node',
         ts = 'ts-node',
         py = 'python3',
         sh = 'sh',
