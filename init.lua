@@ -27,6 +27,8 @@ vim.cmd [[ set mouse= ]]
 
 -- Plugin mappings {{{1
 require("mappings")
+-- Plugin custom settings {{{1
+require("settings")
 -- Plugin auxiliary custom functions {{{1
 require("auxiliary")
 -- Coloscheme {{{1

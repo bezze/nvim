@@ -19,6 +19,8 @@ return {
     { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
     -- Markdown/github md previews
     { 'instant-markdown/vim-instant-markdown', ft = 'markdown', build = 'yarn install' },
+    -- Terraform
+    { 'hashivim/vim-terraform' },
     --  Language server {{{
     { 'neovim/nvim-lspconfig' },                                    -- Official native nvim lsp configuration
     -- Nvim Autocomplete
