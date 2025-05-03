@@ -16,9 +16,11 @@ local function get_interpreter(debug)
             js = 'node inspect',
             cjs = 'node inspect',
             py = 'python3',
+            lua = 'lua',
         }
     end
-    if fileext == 'py' and not vim.fn.empty(vim.env.VIRTUAL_ENV) then
+    -- vim.fn.empty returns 1 or 0, which are NOT booleans
+    if fileext == 'py' and vim.fn.empty(vim.env.VIRTUAL_ENV) ~= 1 then
         return vim.env.VIRTUAL_ENV .. '/bin/' .. extmap[fileext]
     end
     return extmap[fileext]

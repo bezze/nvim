@@ -3,27 +3,38 @@ vim.g.mapleader = ' '           -- let mapleader = "\<Space>"
 vim.g.hlsearch = true
 vim.g.coq_settings = { auto_start = 'shut-up' }
 vim.opt.termguicolors = true
+vim.opt.linebreak = true
 -- For some reason this doesnt work
 -- vim.g.grepprg = 'rg --vimgrep --smart-case --follow'           -- set grepprg=rg\ --vimgrep\ --smart-case\ --follow
 vim.cmd [[ set grepprg=rg\ --vimgrep\ --smart-case\ --follow ]]
 vim.cmd [[ set mouse= ]]
+-- :set switchbuf+=usetab,newtab
+vim.opt.switchbuf:append({ 'usetab', 'newtab' })
+
+-- TODO: debug this
+-- vim.g.easy_align_delimiters = {
+--     '/' = {
+--         pattern =         '//\+\|/\*\|\*/',
+--         delimiter_align = 'l'
+--     }
+-- }
 
 -- Plugin bootloader {{{1
-  -- # Automatically git clone when `lazypath` not found
-  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({
-      "git",
-      "clone",
-      "--filter=blob:none",
-      "--single-branch",
-      "--depth=1",
-      "https://github.com/folke/lazy.nvim.git",
-      lazypath,
-    })
-  end
-  vim.opt.runtimepath:prepend(lazypath)
-  require("lazy").setup("plugins")
+-- # Automatically git clone when `lazypath` not found
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--single-branch",
+    "--depth=1",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
+end
+vim.opt.runtimepath:prepend(lazypath)
+require("lazy").setup("plugins")
 
 -- Plugin mappings {{{1
 require("mappings")
@@ -49,12 +60,15 @@ vim.opt.relativenumber = true   -- set relativenumber
 vim.opt.number = true           -- set number
 vim.opt.wrap = false            -- set nowrap
 vim.opt.expandtab = true        -- set expandtab
-vim.opt.tabstop = 4             -- set tabstop=4
+vim.opt.tabstop = 8             -- set tabstop=4
 vim.opt.shiftwidth = 4          -- set shiftwidth=4
-vim.opt.textwidth = 0           -- set textwidth=0
+vim.opt.textwidth = 0           -- set textwidth=0      -- automatically break-line line after specified char length
 vim.opt.wrapmargin = 0          -- set wrapmargin=0
 vim.opt.cursorline = true       -- set cursorline  " shows line under the cursor's line
+vim.opt.showbreak = "> "
 -- " highlight CursorLine ctermbg=135 guibg=#5c2d27
+
+-- set listchars=eol:¬,tab:▸·,trail:·
 
 -- " Enable folding
 vim.opt.foldmethod = 'syntax' -- set foldmethod=indent
