@@ -1,22 +1,33 @@
+-- function merge(t1, t2) 
+--     t3 = {}
+--     for k, v in pairs(t1) do t3[k] = v end
+--     for k, v in pairs(t2) do t3[k] = v end
+--     return t3
+-- end
+
+
+
+
 -- neovim-fuzzy
 vim.keymap.set('n', '<C-P>', function () vim.cmd("FuzzyOpen .") end)
 
 local _border = "rounded"
 
--- lsp mappings
-local lspconfig = require('lspconfig')
+---- lsp mappings
+--local lspconfig = vim.lsp.config("*")
+--
+--lspconfig.ui.windows.default_options = {
+--  border = _border
+--}
 
-require('lspconfig.ui.windows').default_options = {
-  border = _border
-}
-
+vim.keymap.set('n', '<leader>1', function () vim.cmd("G") end)
 
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
+vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist)
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -32,21 +43,21 @@ local on_attach_common = function(client, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
   vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
   vim.keymap.set('n', '<C-s>', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wl', function()
+  vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+  vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+  vim.keymap.set('n', '<leader>wl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, bufopts)
   -- vim.keymap.set('n', '<space>oi', function()
   --       vim.lsp.buf.execute_command({command = "_typescript.organizeImports", arguments = {vim.fn.expand("%:p")}})
   -- end, bufopts)
-  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+  vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, bufopts)
   -- vim.keymap.set('n', '<space>f', function() vim.api.nvim_command(':! prettier -w ' .. vim.api.nvim_buf_get_name(0)) end, bufopts)
-
+  vim.keymap.set('n', '<leader>L', function() require('lint').try_lint() end, bufopts)
 end  -- end on_attach
 
 -- COQ 3rd party (commented because part of main now)
@@ -61,53 +72,19 @@ local lsp_flags = {
 
 -- Enable some language servers with the additional completion capabilities offered by coq_nvim
 local servers = {
-    -- { name = 'tsserver' },
-    { name = 'ts_ls', config = {
-        _on_attach = function(client, bufnr)
-          local bufopts = { noremap=true, silent=true, buffer=bufnr }
-          vim.keymap.set('n', '<space>oi', function()
-                vim.lsp.buf.execute_command({command = "_typescript.organizeImports", arguments = {vim.fn.expand("%:p")}})
-          end, bufopts)
-        end } },
+    { name = 'ts_ls', config = require("lsp_config/ts_ls") },
+    { name = 'denols', config = require("lsp_config/deno") },
     { name = 'rust_analyzer' },
+    -- { name = 'angularls' },
     { name = 'ruff' },
-    { name = 'basedpyright', config = {
-        _on_attach = function(client, bufnr)
-            local bufopts = { noremap=true, silent=true, buffer=bufnr }
-            vim.keymap.set('n', '<space>oi', function()
-                vim.cmd("PyrightOrganizeImports")
-            end, bufopts)
-        end } },
-    { name = 'solidity', config = {
-        cmd = {'nomicfoundation-solidity-language-server', '--stdio'},
-        filetypes = { 'solidity' },
-        root_dir = lspconfig.util.find_git_ancestor,
-        single_file_support = true,
-    } },
-    { name = 'ccls', config = {
-        init_options = {
-            cache = {
-                directory = ".ccls-cache";
-            }
-        }
-    } },
-    -- { name = 'cairo_ls' }
-    { name = 'cairo_ls', config = {
-        -- cmd = { '/home/odysseus/Others/gits/scarb-git/target/release/scarb-cairo-language-server', '/C', '--node-ipc' },
-        cmd = { 'scarb-cairo-language-server', '/C', '--node-ipc' },
-        init_options = {
-          hostInfo = "neovim"
-        },
-        filetypes = { 'cairo' },
-    } },
-    { name = 'yamlls', config = {
-        cmd = { 'yaml-language-server', '--stdio' },
-        filetypes = { 'yaml' }
-    } },
-    { name = 'html', config = {
-        cmd = { 'vscode-html-language-server', '--stdio' },
-        filetypes = { 'html' }
-    } }
+    { name = 'bashls' },
+    { name = 'basedpyright', config = require("lsp_config/basedpyright") },
+    { name = 'solidity', config = require("lsp_config/solidity") },
+    { name = 'ccls', config = require("lsp_config/ccls") },
+    -- { name = 'cairo_ls' },
+    { name = 'cairo_ls', config = require("lsp_config/cairo_ls") },
+    { name = 'yamlls', config = require("lsp_config/yamlls") },
+    { name = 'html', config = require("lsp_config/html") }
 }
 
 -- vim.cmd [[nnoremap <buffer><silent> <C-space> :lua vim.lsp.diagnostic.show_line_diagnostics({ border = "single" })<CR>]]
@@ -119,6 +96,7 @@ local servers = {
 
 for _, srv in ipairs(servers) do
 
+    -- if exists, we wrap per-server _on_attach with global on_attach
     if srv.config and srv.config._on_attach then
         on_attach_agg = function (client, bufnr)
             on_attach_common(client, bufnr)
@@ -128,6 +106,7 @@ for _, srv in ipairs(servers) do
         on_attach_agg = on_attach_common
     end
 
+    -- we define the common server config, using aggregated on-attach
     local common_srv_config = {
         on_attach = on_attach_agg,
         flags = lsp_flags,
@@ -142,10 +121,13 @@ for _, srv in ipairs(servers) do
             )
         }
     }
+    -- if server has custom config, we extend common_srv_config with srv.config
     if srv.config then
         common_srv_config = vim.tbl_extend('force', common_srv_config, srv.config)
     end
-    lspconfig[srv.name].setup(require('coq').lsp_ensure_capabilities(common_srv_config))
+    vim.lsp.config(srv.name, require('coq').lsp_ensure_capabilities(common_srv_config))
+    vim.lsp.enable(srv.name)
+
 end
 
 -- -- only disable highlights for pylsp
@@ -189,7 +171,7 @@ end
 --     end
 --   end
 
---   require("lspconfig")['pyright'].setup{}
+--   lspconfig['pyright'].setup{}
 
 
 
@@ -206,4 +188,8 @@ require('aerial').setup({
 vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle!<CR>')
 -- vim.keymap.set('n', '~', require('aerial').open)
 
+vim.keymap.set('x', 'ga', '<Plug>(EasyAlign)') -- { noremap = true, silent = true })
+vim.keymap.set('n', 'ga', '<Plug>(EasyAlign)') -- { noremap = true, silent = true })
+
+vim.keymap.set("x", "<leader>yr", function() require("extensions.copy_range").copy_visual_range() end)
 

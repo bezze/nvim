@@ -1,7 +1,16 @@
 -- " Leader
 vim.g.mapleader = ' '           -- let mapleader = "\<Space>"
+vim.g.maplocalleader = ';'           -- let localleader = ";"
 vim.g.hlsearch = true
 vim.g.coq_settings = { auto_start = 'shut-up' }
+vim.g.markdown_fenced_languages = {
+    'rust=rust',
+    'cairo=cairo',
+    'python=python',
+    'typescript=typescript',
+    'javascript=javascript'
+}
+vim.g.markdown_minlines = 100;
 vim.opt.termguicolors = true
 vim.opt.linebreak = true
 -- For some reason this doesnt work
@@ -45,7 +54,8 @@ require("auxiliary")
 -- Coloscheme {{{1
 --vim.cmd.colorscheme("habamax")
 -- vim.cmd.colorscheme("melange")
-vim.cmd.colorscheme("monokai")
+-- vim.cmd.colorscheme("tender")
+vim.cmd.colorscheme("kanagawa-wave")
 
 
 -- Config {{{1
@@ -153,6 +163,13 @@ vim.api.nvim_create_user_command(
 )
 
 vim.keymap.set('n', '<Leader>g', function () return ':NewGrep ' end, { expr = true })
+-- https://github.com/tpope/vim-fugitive/issues/236#issuecomment-635628157 eventually use cz<Space>apply<Space><C-R><C-G> 
+vim.keymap.set('n', '<Leader>s', function () return ':Gclog -g stash ' end, { expr = true })
+
+-- BC calc {{{3
+require('calc')
+vim.keymap.set('n', '<Leader>b', function () return ':BC ' end, { expr = true})
+--}}}
 
 -- Autocommands {{{2
 vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter"}, {
@@ -167,6 +184,20 @@ vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter"}, {
     pattern = {"*.ts", "*.js", "*.cjs", "*.mjs"},
     callback = function()
         require("langs/typescript")
+    end,
+})
+
+vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter"}, {
+    pattern = {"*.cairo"},
+    callback = function()
+        require("langs/cairo")
+    end,
+})
+
+vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter"}, {
+    pattern = {"*.circom"},
+    callback = function()
+        require("langs/circom")
     end,
 })
 

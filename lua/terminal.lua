@@ -19,10 +19,20 @@ local function get_interpreter(debug)
             lua = 'lua',
         }
     end
+
     -- vim.fn.empty returns 1 or 0, which are NOT booleans
-    if fileext == 'py' and vim.fn.empty(vim.env.VIRTUAL_ENV) ~= 1 then
-        return vim.env.VIRTUAL_ENV .. '/bin/' .. extmap[fileext]
+    if fileext == 'py' then
+
+        if vim.fn.empty(vim.env.VIRTUAL_ENV) ~= 1 then
+            return vim.env.VIRTUAL_ENV .. '/bin/' .. extmap[fileext]
+        end
+
+        if #(vim.fn.readdir('.', [[v:val =~ '^venv$']])) == 1 then
+            return './venv/bin/python'
+        end
+
     end
+
     return extmap[fileext]
 end
 
